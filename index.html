@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<!-- @dsCard group="UI Kit — Daybook App" name="Daybook app (editable)" subtitle="Full editable daily ledger — live balances, autosave" viewport="960x620" -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Daybook — Daily Financial Planning</title>
+<meta name="description" content="Daybook — a daily financial planning ledger.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#fdfcf8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Daybook">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<style>
+/* ============================================================
+   DAYBOOK — Daily Financial Planning App
+   Foundational tokens: color + typography
+   Derived directly from the Daily Money Ledger reference artifact.
+
+   Aesthetic: editorial financial almanac. Paper & ink, a single gold
+   accent, account color-coding, and monospace figures. Mostly square
+   corners, hairline rules, restrained shadows.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+:root {
+  /* ---------- CORE PALETTE ---------- */
+  --ink: #1a1a1a;          /* primary text + inverse (dark) surfaces */
+  --paper: #fdfcf8;        /* app background — warm off-white "paper" */
+  --card: #ffffff;         /* raised card surface */
+  --rule: #e7e3d8;         /* hairline dividers & borders */
+  --gold: #b8893a;         /* the single brand accent */
+
+  /* warm neutral surfaces (subtle stratification of "paper") */
+  --warm-1: #faf8f2;       /* day headers, day notes, log month cells */
+  --warm-2: #f8f5ec;       /* end-of-day band */
+
+  /* ---------- NEUTRAL TEXT SCALE ---------- */
+  --fg-1: #1a1a1a;         /* primary */
+  --fg-2: #444444;         /* body secondary / list copy */
+  --fg-3: #666666;         /* muted captions, subheads */
+  --fg-4: #777777;         /* notes, italic asides */
+  --fg-5: #999999;         /* faint — line numbers, dates */
+  --fg-6: #cccccc;         /* faintest — blank/placeholder marks */
+  --fg-on-ink: #fdfcf8;    /* text on the dark ink surface */
+  --fg-on-ink-dim: rgba(255,255,255,0.7);
+
+  /* ---------- SEMANTIC / ACCOUNT COLOR-CODING ---------- */
+  /* Money in / positive */
+  --pos: #15803d;
+  --pos-tint: #f0fdf4;     /* section background */
+  --pos-chip-bg: #dcfce7;  /* chip / tag background */
+
+  /* Business account (amber/brown) */
+  --biz: #92400e;
+  --biz-tint: #fef3e2;
+
+  /* Personal account (red) */
+  --person: #9b2c2c;
+  --person-tint: #fde8e8;
+
+  /* Pending / awaiting clearance (amber-yellow) */
+  --pending: #92400e;
+  --pending-bg: #fef3c7;
+
+  /* Savings pot (deep brown) */
+  --pot: #7c2d12;
+  --pot-bg: #fef3c7;
+  --savings-tint: #fffbeb;
+
+  /* Info / start-of-day (slate blue) */
+  --info: #1e3a5f;
+  --info-tint: #eef4f9;
+
+  /* System / automated ("⚡ AUTO" — indigo) */
+  --auto: #3730a3;
+  --auto-bg: #e7e9fb;
+  --auto-accent: #6366f1;
+
+  /* Special / ministry / first-fruits (violet) */
+  --special: #6b21a8;
+  --special-bg: #f5e6ff;
+
+  /* Warning / attention (red) */
+  --warn: #b91c1c;
+  --warn-bg: #fee2e2;
+  --warn-fg: #991b1b;
+
+  /* ---------- TYPE FAMILIES ---------- */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+
+  /* ---------- TYPE SCALE (px) ---------- */
+  --fs-eyebrow: 11px;      /* uppercase tracked label */
+  --fs-micro: 9px;         /* section labels */
+  --fs-note: 10.5px;       /* italic notes */
+  --fs-small: 11px;
+  --fs-body: 13px;         /* line items */
+  --fs-base: 14px;         /* default body */
+  --fs-sub: 17px;          /* italic subheads */
+  --fs-h3: 20px;
+  --fs-h2: 22px;
+  --fs-h1: 32px;
+  --fs-display: 38px;      /* hero header */
+
+  /* ---------- TRACKING ---------- */
+  --track-eyebrow: 0.25em;
+  --track-label: 0.15em;
+  --track-tight: -0.02em;  /* display headings */
+
+  /* ---------- SPACING (4px base rhythm) ---------- */
+  --sp-1: 4px;
+  --sp-2: 6px;
+  --sp-3: 8px;
+  --sp-4: 10px;
+  --sp-5: 12px;
+  --sp-6: 14px;
+  --sp-7: 16px;
+  --sp-8: 18px;
+  --sp-9: 20px;
+  --sp-10: 24px;
+  --sp-12: 30px;
+  --sp-14: 40px;
+
+  /* ---------- RADII (mostly square — editorial) ---------- */
+  --radius-chip: 3px;      /* tags, chips, pills */
+  --radius-card: 4px;      /* cards, columns */
+  --radius-0: 0px;         /* full-width ledger bands are square */
+
+  /* ---------- BORDERS ---------- */
+  --border-hair: 1px solid var(--rule);
+  --border-dash: 1px dashed var(--rule);
+  --border-strong: 2px solid var(--ink);
+  --border-double: 3px double var(--ink);
+  --border-accent: 4px solid var(--gold);
+
+  /* ---------- SHADOWS (rare, soft) ---------- */
+  --shadow-card: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ============================================================
+   SEMANTIC TYPE CLASSES
+   Use these directly, or copy the rule into your own selectors.
+   ============================================================ */
+
+.db-eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: var(--track-eyebrow);
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.db-display {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 900;
+  letter-spacing: var(--track-tight);
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.db-h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: 900;
+  letter-spacing: var(--track-tight);
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.db-h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.db-h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.db-subhead {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-sub);
+  font-weight: 400;
+  color: var(--fg-3);
+}
+
+.db-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  font-weight: 700;
+}
+
+.db-body {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--fg-2);
+}
+
+.db-item {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.db-note {
+  font-family: var(--font-body);
+  font-size: var(--fs-note);
+  font-style: italic;
+  color: var(--fg-4);
+}
+
+/* Figures — ALWAYS monospace. Amounts, balances, ledger numbers. */
+.db-amount {
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.db-amount-pos { color: var(--pos); }
+.db-amount-neg { color: var(--ink); }
+
+.db-figure-lg {
+  font-family: var(--font-mono);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+</style>
+<style>
+/* ============================================================
+   Daybook app — UI kit stylesheet
+   Component classes built on the foundational tokens.
+   Faithful to the Daily Money Ledger reference artifact.
+   ============================================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* ---------- App frame ---------- */
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(253,252,248,0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 26px;
+}
+.app-mark {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+.app-mark .dot { color: var(--gold); }
+.app-range {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--fg-3);
+}
+.app-spacer { flex: 1; }
+.app-btn {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-3);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 7px 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+.app-btn:hover { background: var(--warm-1); color: var(--ink); }
+.app-btn:active { background: var(--rule); }
+.app-btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.app-btn.primary:hover { opacity: 0.88; }
+
+/* save indicator + storage warning */
+.save-dot { font-family: var(--font-body); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-5); }
+.save-dot.ok { color: var(--pos); }
+.storage-warn { background: var(--warn-bg); color: var(--warn-fg); font-size: 12px; line-height: 1.5; padding: 10px 26px; border-bottom: 1px solid var(--rule); }
+.storage-warn strong { color: var(--warn); }
+
+/* day jump pills */
+.day-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px 26px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--card);
+  position: sticky;
+  top: 53px;
+  z-index: 19;
+}
+.day-pill {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fg-4);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 140ms ease;
+}
+.day-pill:hover { background: var(--warm-1); color: var(--ink); }
+.day-pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.day-pill.star { border-color: var(--gold); color: var(--gold); }
+.day-pill.star.active { background: var(--gold); color: #fff; }
+
+.page { max-width: 920px; margin: 0 auto; padding: 30px 20px 80px; }
+
+/* ---------- Masthead ---------- */
+.masthead { text-align: center; margin-bottom: 34px; padding-bottom: 26px; border-bottom: 2px solid var(--ink); }
+.masthead .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.25em; color: var(--gold); margin-bottom: 12px; font-weight: 600; }
+.masthead h1 { font-family: var(--font-display); font-size: 38px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 10px; }
+.masthead .sub { font-family: var(--font-display); font-style: italic; font-size: 17px; color: var(--fg-3); }
+.masthead .version { margin-top: 8px; font-size: 11px; color: var(--fg-5); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* ---------- Summary bar ---------- */
+.summary { background: var(--ink); color: var(--paper); padding: 22px 26px; margin-bottom: 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.summary-cell { text-align: center; }
+.summary-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7; margin-bottom: 6px; }
+.summary-value { font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+.summary-value.gold { color: var(--gold); }
+
+/* ---------- Callout / instructions ---------- */
+.callout { background: var(--card); border: 1px solid var(--rule); padding: 20px 24px; margin-bottom: 22px; border-left: 4px solid var(--gold); font-size: 13px; }
+.callout h3 { font-family: var(--font-display); font-size: 17px; margin-bottom: 8px; }
+.callout ul { margin-left: 20px; color: var(--fg-2); }
+.callout li { margin-bottom: 4px; }
+.callout strong { color: var(--ink); }
+.tip-callout { background: var(--auto-bg); color: var(--auto); border-left: 4px solid var(--auto-accent); padding: 13px 18px; font-size: 12.5px; margin-bottom: 22px; }
+.tip-callout strong { color: #2a2080; }
+
+/* ---------- Payment reference card ---------- */
+.payment-card { background: var(--card); border: 2px solid var(--ink); padding: 22px 26px; margin-bottom: 26px; }
+.payment-card h3 { font-family: var(--font-display); font-size: 20px; text-align: center; margin-bottom: 16px; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.card-col { border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+.card-header { padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; text-align: center; border-bottom: 1px solid var(--rule); }
+.card-header.biz { background: var(--biz-tint); color: var(--biz); }
+.card-header.personal { background: var(--person-tint); color: var(--person); }
+.bill-list { list-style: none; }
+.bill-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; border-bottom: 1px dashed var(--rule); font-size: 13px; gap: 10px; }
+.bill-list li:last-child { border-bottom: none; }
+.bill-amt { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--fg-3); white-space: nowrap; }
+.bill-list li.transfer-out { background: var(--warm-1); font-style: italic; color: var(--fg-3); }
+.bill-list li.paused { opacity: 0.5; text-decoration: line-through; }
+
+/* ---------- Day block ---------- */
+.day { background: var(--card); border: 1px solid var(--rule); margin-bottom: 18px; scroll-margin-top: 110px; }
+.day.star { border: 2px solid var(--ink); box-shadow: var(--shadow-card); }
+.day-header { padding: 14px 20px 12px; background: var(--warm-1); border-bottom: 1px solid var(--rule); }
+.day-header h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.day-header .badge { color: var(--gold); font-size: 13px; font-weight: 600; }
+
+.section { border-bottom: 1px solid var(--rule); }
+.section:last-of-type { border-bottom: none; }
+.section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 700; padding: 8px 20px 6px; }
+.section-label.deposits { color: var(--pos); background: var(--pos-tint); }
+.section-label.clearing { color: var(--pos); background: var(--pos-tint); }
+.section-label.biz { color: var(--biz); background: var(--biz-tint); }
+.section-label.personal { color: var(--person); background: var(--person-tint); }
+
+/* line rows */
+.line-row { display: grid; grid-template-columns: 22px 24px 1fr auto auto; gap: 10px; align-items: center; padding: 9px 20px; border-bottom: 1px dashed var(--rule); transition: background 120ms ease; }
+.line-row:last-child { border-bottom: none; }
+.line-row.clickable { cursor: pointer; }
+.line-row.clickable:hover { background: rgba(0,0,0,0.02); }
+.line-row.info-row { grid-template-columns: 1fr auto; }
+.line-row.done .line-item, .line-row.done .line-amount { text-decoration: line-through; opacity: 0.5; }
+.line-number { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--fg-5); text-align: center; user-select: none; }
+.check-box { width: 17px; height: 17px; border: 1.5px solid var(--rule); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--pos); margin: 0 auto; transition: border-color 120ms ease, background 120ms ease; }
+.line-row.done .check-box { border-color: var(--pos); background: var(--pos-chip-bg); }
+.line-content { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.line-tag { align-self: flex-start; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 7px; border-radius: 3px; font-weight: 600; }
+.line-tag.dep { background: var(--pos-chip-bg); color: var(--pos); }
+.line-tag.pending { background: var(--pending-bg); color: var(--pending); }
+.line-tag.biz { background: var(--biz-tint); color: var(--biz); }
+.line-tag.personal { background: var(--person-tint); color: var(--person); }
+.line-tag.irs { background: var(--ink); color: var(--fg-on-ink); }
+.line-tag.ministry { background: var(--special-bg); color: var(--special); }
+.line-tag.funds { background: var(--pos-chip-bg); color: var(--pos); }
+.line-item { font-size: 13px; font-weight: 500; line-height: 1.3; }
+.line-note { font-size: 10.5px; color: var(--fg-4); font-style: italic; }
+.auto-tag { background: var(--auto-bg); color: var(--auto); font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-left: 6px; letter-spacing: 0.05em; white-space: nowrap; }
+.line-amount { font-family: var(--font-mono); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.line-amount.positive { color: var(--pos); }
+.line-amount.negative { color: var(--ink); }
+.line-amount.pending { color: var(--pending); opacity: 0.75; }
+.balance-after { font-family: var(--font-mono); font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; white-space: nowrap; text-align: right; }
+.balance-after.biz { background: var(--biz-tint); color: var(--biz); }
+.balance-after.personal { background: var(--person-tint); color: var(--person); }
+.balance-after.pending { background: var(--pending-bg); color: var(--pending); }
+
+/* transfer row */
+.transfer-row { background: var(--ink); color: var(--paper); padding: 11px 20px; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; }
+.transfer-arrow { font-size: 16px; }
+.transfer-amount { font-family: var(--font-mono); font-size: 14px; }
+.transfer-pair { margin-left: auto; display: flex; gap: 6px; }
+.transfer-pair span { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 3px; }
+.transfer-pair .biz { background: var(--biz-tint); color: var(--biz); }
+.transfer-pair .personal { background: var(--person-tint); color: var(--person); }
+
+/* day bands */
+.band { padding: 9px 20px; display: flex; align-items: center; gap: 10px; font-size: 12px; flex-wrap: wrap; }
+.band.sod { background: var(--info-tint); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.band.eod { background: var(--warm-2); border-top: 1px solid var(--rule); }
+.band-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; font-size: 9px; }
+.band.sod .band-label { color: var(--info); }
+.band.eod .band-label { color: var(--fg-3); }
+.band-fig { font-family: var(--font-mono); font-weight: 700; font-size: 12px; }
+.band-fig.biz { color: var(--biz); }
+.band-fig.personal { color: var(--person); }
+.band-fig.pending { color: var(--pending); }
+.band-fig.pot { color: var(--pot); background: var(--pot-bg); padding: 2px 8px; border-radius: 3px; }
+.band-fig.irs { color: var(--fg-on-ink); background: var(--ink); padding: 2px 8px; border-radius: 3px; }
+.band-div { color: var(--fg-6); }
+
+.day-note { background: var(--warm-1); padding: 10px 20px; font-size: 11.5px; font-style: italic; color: var(--fg-3); border-top: 1px dashed var(--rule); }
+
+/* totals */
+.totals { margin-top: 36px; padding: 26px; background: var(--card); border: 2px solid var(--ink); }
+.totals h3 { font-family: var(--font-display); font-size: 22px; margin-bottom: 16px; text-align: center; }
+.totals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 28px; }
+.totals-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dotted var(--rule); font-size: 13px; }
+.totals-row strong { font-family: var(--font-mono); font-size: 14px; }
+.totals-row.grand { grid-column: 1 / -1; border-top: 2px solid var(--ink); border-bottom: none; padding-top: 14px; margin-top: 8px; }
+.totals-row.grand strong { color: var(--gold); }
+
+@media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } .summary { grid-template-columns: repeat(2, 1fr); } }
+
+/* ============================================================
+   EDITABLE CONTROLS
+   ============================================================ */
+
+/* inline editable text — looks like text until hover/focus */
+.inline-input {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 1px 2px;
+  margin: -1px -2px;
+  border-radius: 2px;
+  outline: none;
+  width: 100%;
+  min-width: 20px;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.inline-input:hover { background: rgba(184,137,58,0.08); }
+.inline-input:focus { background: #fff; border-bottom-color: var(--gold); box-shadow: 0 1px 0 var(--gold); }
+.inline-input::placeholder { color: var(--fg-6); font-style: italic; }
+
+/* money input sits in the amount cell */
+.money-cell { display: flex; align-items: center; justify-content: flex-end; gap: 1px; font-family: var(--font-mono); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.money-sign { user-select: none; }
+.money-cell.positive, .money-cell.positive .money-input { color: var(--pos); }
+.money-cell.negative, .money-cell.negative .money-input { color: var(--ink); }
+.money-cell.pending, .money-cell.pending .money-input { color: var(--pending); }
+.money-input {
+  font: inherit; color: inherit; background: transparent; border: none;
+  border-bottom: 1px solid transparent; outline: none; text-align: right;
+  width: 7ch; padding: 1px 2px; border-radius: 2px;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.money-input:hover { background: rgba(184,137,58,0.10); }
+.money-input:focus { background: #fff; border-bottom-color: var(--gold); }
+.money-input::-webkit-outer-spin-button, .money-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.money-input[type=number] { -moz-appearance: textfield; }
+
+/* opening-balance setup card */
+.setup-card { background: var(--card); border: 1px solid var(--rule); border-left: 4px solid var(--info); padding: 14px 20px; margin-bottom: 22px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.setup-card .setup-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; color: var(--info); }
+.setup-field { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.setup-field label { font-weight: 600; color: var(--fg-3); }
+.setup-money { font-family: var(--font-mono); font-weight: 700; font-size: 13px; display: flex; align-items: center; }
+.setup-money input { font: inherit; width: 11ch; background: transparent; border: none; border-bottom: 1px solid var(--rule); outline: none; padding: 1px 2px; border-radius: 2px; transition: border-color 120ms ease, background 120ms ease; }
+.setup-money input:hover { background: rgba(184,137,58,0.08); }
+.setup-money input:focus { border-bottom-color: var(--gold); background: #fff; }
+.setup-money.biz input { color: var(--biz); } .setup-money.personal input { color: var(--person); } .setup-money.pot input { color: var(--pot); }
+.setup-money.irs input { color: var(--ink); }
+.setup-money.pending input { color: var(--pending); }
+
+/* type selector + account toggle in a line */
+.line-controls { display: flex; align-items: center; gap: 6px; }
+.type-select {
+  font-family: var(--font-body); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  border: 1px solid var(--rule); border-radius: 3px; padding: 3px 6px; background: var(--card); color: var(--fg-3);
+  cursor: pointer; outline: none;
+}
+.type-select:focus { border-color: var(--gold); }
+.acct-toggle {
+  font-family: var(--font-body); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  border: 1px solid var(--rule); border-radius: 3px; padding: 3px 8px; cursor: pointer; background: var(--card);
+  transition: all 120ms ease;
+}
+.acct-toggle.biz { background: var(--biz-tint); color: var(--biz); }
+.acct-toggle.personal { background: var(--person-tint); color: var(--person); }
+
+/* Stripe fee toggle on deposit lines */
+.stripe-toggle {
+  font-family: var(--font-body); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  border: 1px solid var(--rule); border-radius: 3px; padding: 3px 8px; cursor: pointer; background: var(--card); color: var(--fg-4);
+  transition: all 120ms ease;
+}
+.stripe-toggle.on { background: #635bff; color: #fff; border-color: #635bff; }
+.stripe-hint { font-family: var(--font-mono); font-size: 10px; color: #635bff; font-weight: 600; }
+
+/* row delete + drag affordance */
+.row-actions { display: flex; align-items: center; gap: 4px; opacity: 0.45; transition: opacity 120ms ease; }
+.line-row:hover .row-actions, .transfer-row:hover .row-actions { opacity: 1; }
+@media (hover: none) { .row-actions { opacity: 1; } }
+.icon-btn {
+  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+  border: none; background: none; border-radius: 4px; cursor: pointer; color: var(--fg-5); font-size: 14px;
+  transition: background 120ms ease, color 120ms ease;
+}
+.icon-btn:hover { background: var(--warn-bg); color: var(--warn); }
+
+/* add-line button inside a section / day */
+.add-line { display: flex; align-items: center; gap: 7px; padding: 8px 20px; width: 100%; background: none; border: none; border-top: 1px dashed var(--rule); cursor: pointer; font-family: var(--font-body); font-size: 11px; font-weight: 600; color: var(--fg-4); text-align: left; transition: background 120ms ease, color 120ms ease; }
+.add-line:hover { background: var(--warm-1); color: var(--gold); }
+.add-line .plus { font-size: 15px; line-height: 1; }
+
+/* editable day header */
+.day-header { display: flex; align-items: center; gap: 10px; }
+.day-header h2 { flex: 1; }
+.star-toggle { background: none; border: none; cursor: pointer; font-size: 18px; line-height: 1; color: var(--fg-6); transition: color 120ms ease, transform 120ms ease; }
+.star-toggle.on { color: var(--gold); }
+.star-toggle:hover { transform: scale(1.15); }
+.day-delete { color: var(--fg-5); }
+.day-delete:hover { color: var(--warn); }
+
+/* editable note */
+.day-note-edit { width: 100%; resize: none; overflow: hidden; }
+
+/* add-day button */
+.add-day { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 16px; margin-bottom: 18px; background: var(--card); border: 1px dashed var(--rule); border-radius: 4px; cursor: pointer; font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--fg-4); transition: all 140ms ease; }
+.add-day:hover { border-color: var(--gold); color: var(--gold); background: var(--warm-1); }
+
+/* toast */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 10px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 200ms ease, transform 200ms ease; z-index: 50; box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* transfer row editable */
+.transfer-row .inline-input { color: var(--paper); }
+.transfer-row .inline-input:hover { background: rgba(255,255,255,0.12); }
+.transfer-row .inline-input:focus { background: rgba(255,255,255,0.18); border-bottom-color: var(--gold); box-shadow: none; }
+.transfer-row .money-input { color: var(--paper); }
+.transfer-row .money-input:hover { background: rgba(255,255,255,0.12); }
+.transfer-row .row-actions .icon-btn { color: var(--fg-on-ink-dim); }
+.transfer-row .row-actions .icon-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* empty section hint */
+.section-empty { padding: 10px 20px; font-size: 11px; color: var(--fg-6); font-style: italic; }
+
+/* ============================================================
+   REFERENCE GUIDE (editable bill tracker)
+   ============================================================ */
+.bill-list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.bill-main { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.bill-name-in { font-size: 13px; font-weight: 500; color: var(--ink); }
+.bill-controls { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.bill-due-in { font-family: var(--font-body); font-size: 10.5px; color: var(--fg-4); font-style: italic; width: 78px; text-align: right; }
+.bill-amt { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--fg-3); display: flex; align-items: center; }
+.bill-cost-in { font: inherit; width: 8ch; background: transparent; border: none; border-bottom: 1px solid transparent; outline: none; text-align: right; padding: 1px 2px; border-radius: 2px; color: var(--fg-3); transition: background 120ms ease, border-color 120ms ease; }
+.bill-cost-in:hover { background: rgba(184,137,58,0.10); }
+.bill-cost-in:focus { background: #fff; border-bottom-color: var(--gold); }
+.bill-cost-in::-webkit-outer-spin-button, .bill-cost-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.mini-toggle { width: 20px; height: 20px; border: 1px solid var(--rule); background: var(--card); border-radius: 3px; cursor: pointer; font-size: 10px; color: var(--fg-6); display: flex; align-items: center; justify-content: center; transition: all 120ms ease; padding: 0; }
+.mini-toggle.on { background: var(--auto-bg); color: var(--auto); border-color: var(--auto); }
+.payment-card .add-line { border-top: 1px dashed var(--rule); }
+
+/* ============================================================
+   MAINTENANCE + UPCOMING CHARTS
+   ============================================================ */
+.chart-card { background: var(--card); border: 1px solid var(--rule); border-radius: 4px; margin-bottom: 22px; overflow: hidden; }
+.chart-header { color: #fff; padding: 11px 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.chart-header.maint { background: var(--info); }
+.chart-header.upcoming { background: var(--pot); }
+.chart-header.fuel { background: #1e3a5f; }
+
+/* ---- Fuel Log ---- */
+.mpg-badge { font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--pos); }
+.mpg-badge.low { color: var(--warn); }
+.fuel-warn { background: var(--warn-bg); color: var(--warn-fg); font-size: 11.5px; line-height: 1.45; padding: 9px 12px; border-radius: 4px; margin-bottom: 10px; }
+.fuel-row { display: grid; grid-template-columns: 1fr 1.1fr 0.9fr 0.9fr 0.7fr 24px; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px dashed var(--rule); font-size: 13px; }
+.fuel-row:last-of-type { border-bottom: none; }
+.fuel-head { font-family: var(--font-body); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-4); border-bottom: 1px solid var(--rule); }
+.fuel-head span:nth-child(n+2) { text-align: right; }
+.fuel-date { font-size: 12px; font-weight: 600; color: var(--ink); }
+.fuel-num { text-align: right; font-family: var(--font-mono); }
+.fuel-input { font: inherit; font-family: var(--font-mono); font-size: 13px; font-weight: 600; width: 100%; text-align: right; background: transparent; border: none; border-bottom: 1px solid transparent; outline: none; padding: 1px 2px; border-radius: 2px; color: var(--ink); transition: background 120ms ease, border-color 120ms ease; }
+.fuel-input:hover { background: rgba(184,137,58,0.10); }
+.fuel-input:focus { background: #fff; border-bottom-color: var(--gold); }
+.fuel-input::-webkit-outer-spin-button, .fuel-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.fuel-calc { text-align: right; font-family: var(--font-mono); font-size: 12px; color: var(--fg-3); }
+.fuel-mpg { text-align: right; font-family: var(--font-mono); font-size: 14px; font-weight: 800; color: var(--pos); }
+.fuel-mpg.low { color: var(--warn); }
+.fuel-note { font-size: 10.5px; color: var(--fg-4); font-style: italic; line-height: 1.5; padding: 10px 0 2px; border-top: 1px dashed var(--rule); margin-top: 4px; }
+.fuel-note strong { color: var(--ink); }
+.chart-body { padding: 14px 20px 0; }
+.odo-display { display: flex; align-items: baseline; gap: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--rule); margin-bottom: 6px; flex-wrap: wrap; }
+.odo-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--fg-3); font-weight: 600; }
+.odo-value { font-family: var(--font-mono); font-size: 13px; font-weight: 800; color: var(--fg-3); display: flex; align-items: baseline; gap: 3px; }
+.odo-input { font-family: var(--font-mono); font-size: 22px; font-weight: 800; color: var(--ink); width: 8.5ch; background: transparent; border: none; border-bottom: 1px solid transparent; outline: none; padding: 0 2px; transition: background 120ms ease, border-color 120ms ease; }
+.odo-input:hover { background: rgba(184,137,58,0.10); }
+.odo-input:focus { background: #fff; border-bottom-color: var(--gold); }
+.odo-input::-webkit-outer-spin-button, .odo-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.odo-date { font-size: 11px; color: var(--fg-5); font-style: italic; flex: 1; min-width: 120px; }
+.chart-list { list-style: none; }
+.chart-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--rule); font-size: 13px; }
+.chart-list li:last-child { border-bottom: none; }
+.chart-list li .chk { width: 18px; height: 18px; flex-shrink: 0; border: 1.5px solid var(--rule); border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--pos); cursor: pointer; transition: all 120ms ease; }
+.chart-list li.done .chk { background: var(--pos-chip-bg); border-color: var(--pos); }
+.chart-list li.done .chart-item-in { text-decoration: line-through; opacity: 0.5; }
+.chart-item-in { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; color: var(--ink); }
+.chart-due-in { font-family: var(--font-mono); font-size: 11px; color: var(--fg-4); width: 140px; text-align: right; flex-shrink: 0; }
+.chart-cost-in { font-family: var(--font-mono); font-size: 12px; font-weight: 700; width: 8ch; text-align: right; background: transparent; border: none; border-bottom: 1px solid transparent; outline: none; padding: 1px 2px; border-radius: 2px; transition: background 120ms ease, border-color 120ms ease; }
+.chart-cost-in:hover { background: rgba(184,137,58,0.10); }
+.chart-cost-in:focus { background: #fff; border-bottom-color: var(--gold); }
+.chart-cost-in::-webkit-outer-spin-button, .chart-cost-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.upcoming-cost { font-family: var(--font-mono); color: var(--pot); font-weight: 700; background: #fff7ed; padding: 2px 6px; border-radius: 3px; display: flex; align-items: center; flex-shrink: 0; }
+.upcoming-cost .chart-cost-in { color: var(--pot); }
+
+/* ============================================================
+   QUICK-ADD BUTTON ROW inside days
+   ============================================================ */
+.add-row { display: flex; flex-wrap: wrap; gap: 0; border-top: 1px dashed var(--rule); }
+.add-row .add-line { border-top: none; flex: 1 1 140px; justify-content: center; }
+.add-row .add-line + .add-line { border-left: 1px dashed var(--rule); }
+
+/* editable line row: flex layout with room for controls */
+.line-row.edit { display: flex; align-items: flex-start; gap: 12px; }
+.line-row.edit .line-content { flex: 1; min-width: 0; }
+.line-row.edit .check-box { margin-top: 2px; cursor: pointer; flex-shrink: 0; }
+.line-row.edit .money-cell { margin-top: 1px; flex-shrink: 0; }
+.line-row.edit .balance-after { margin-top: 3px; flex-shrink: 0; }
+.line-row.edit .row-actions { margin-top: 0; flex-shrink: 0; }
+.line-controls { margin-bottom: 4px; }
+.transfer-row .type-select { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.25); }
+.transfer-row .type-select option { color: var(--ink); }
+.line-row.done .desc-input { text-decoration: line-through; opacity: 0.5; }
+.line-row.done .money-cell { text-decoration: line-through; opacity: 0.5; }
+
+/* ============================================================
+   MOBILE  (phones, ≤ 560px)
+   ============================================================ */
+@media (max-width: 560px) {
+  body { font-size: 15px; -webkit-text-size-adjust: 100%; }
+
+  /* prevent iOS zoom-on-focus: inputs must be ≥16px */
+  input, select, textarea, .inline-input, .money-input, .fuel-input,
+  .bill-cost-in, .chart-cost-in, .odo-input, .setup-money input { font-size: 16px !important; }
+  .type-select, .acct-toggle, .stripe-toggle, .mini-toggle { font-size: 11px !important; }
+
+  /* App bar: let it wrap, drop the date range, keep buttons reachable */
+  .app-bar { flex-wrap: wrap; gap: 8px 10px; padding: 10px 14px; position: static; }
+  .app-range { display: none; }
+  .app-mark { font-size: 20px; }
+  .save-dot { order: 5; }
+  .app-spacer { display: none; }
+  .app-btn { flex: 1 1 auto; padding: 9px 10px; text-align: center; }
+  .app-btn.primary { flex-basis: 100%; }
+
+  /* Day-nav pills: not sticky on mobile (saves vertical space), scrolls */
+  .day-nav { position: static; padding: 8px 14px; }
+
+  .page { padding: 18px 12px 80px; }
+
+  /* Masthead */
+  .masthead h1 { font-size: 27px; }
+  .masthead .sub { font-size: 15px; }
+
+  /* Summary: 2 columns */
+  .summary { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 18px; }
+  .summary-value { font-size: 19px; }
+
+  /* Opening position: each field on its own line, full width */
+  .setup-card { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 16px; }
+  .setup-field { justify-content: space-between; }
+
+  /* Day blocks edge-to-edge feel */
+  .day-header { padding: 12px 14px; }
+  .day-header h2 { font-size: 18px; }
+  .section-label { padding: 8px 14px 6px; }
+
+  /* Ledger line rows: stack content / figures so nothing is squeezed */
+  .line-row.edit { flex-wrap: wrap; gap: 8px 10px; padding: 11px 14px; }
+  .line-row.edit .check-box { width: 24px; height: 24px; }
+  .line-row.edit .line-content { flex: 1 1 100%; order: 1; }
+  .line-row.edit .check-box { order: 0; }
+  .line-row.edit .money-cell { order: 2; margin-left: 34px; }
+  .line-row.edit .balance-after { order: 3; margin-left: auto; }
+  .line-row.edit .row-actions { order: 4; }
+  .line-controls { flex-wrap: wrap; }
+  .money-input { width: 8ch; }
+
+  /* quick-add: one button per row, full width, easy to tap */
+  .add-row { flex-direction: column; }
+  .add-row .add-line { flex: 1 1 auto; justify-content: flex-start; padding: 12px 14px; }
+  .add-row .add-line + .add-line { border-left: none; border-top: 1px dashed var(--rule); }
+
+  /* Bands wrap (already) — tighten padding */
+  .band { padding: 9px 14px; font-size: 12px; }
+  .day-note { padding: 10px 14px; }
+
+  /* Transfer row */
+  .transfer-row { flex-wrap: wrap; padding: 11px 14px; }
+  .transfer-pair { margin-left: 34px; }
+
+  /* Reference bill list: stack name over controls */
+  .payment-card { padding: 16px 14px; }
+  .card-grid { gap: 16px; }
+  .bill-list li { flex-wrap: wrap; gap: 6px 8px; padding: 10px 14px; }
+  .bill-main { flex: 1 1 100%; }
+  .bill-controls { flex: 1 1 100%; justify-content: flex-end; }
+  .bill-due-in { width: auto; flex: 1; text-align: left; }
+
+  /* Charts */
+  .chart-header { padding: 11px 14px; font-size: 11px; }
+  .chart-body { padding: 14px 14px 0; }
+  .chart-list li { flex-wrap: wrap; gap: 6px 8px; }
+  .chart-item-in { flex: 1 1 60%; }
+  .chart-due-in { width: auto; flex: 1 1 auto; text-align: right; }
+
+  /* Fuel log: keep the 5 data columns but shrink to fit, smaller gaps */
+  .fuel-row { grid-template-columns: 1fr 1.2fr 0.9fr 0.8fr 0.7fr 22px; gap: 5px; font-size: 12px; }
+  .fuel-head { font-size: 8px; letter-spacing: 0.04em; }
+  .fuel-input { font-size: 16px !important; }
+  .fuel-mpg { font-size: 13px; }
+  .mpg-badge { font-size: 16px; }
+
+  /* Totals single column */
+  .totals { padding: 20px 16px; }
+  .totals-grid { grid-template-columns: 1fr; gap: 0; }
+  .totals-row.grand { margin-top: 10px; }
+
+  /* Callouts */
+  .callout, .tip-callout, .storage-warn { padding: 14px; font-size: 13px; }
+}
+
+@media (max-width: 380px) {
+  .summary { grid-template-columns: 1fr 1fr; }
+  .fuel-row { font-size: 11px; gap: 4px; }
+  .masthead h1 { font-size: 24px; }
+}
+
+
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#fdfcf8">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#fdfcf8"/>
+    <text x="600" y="360" font-family="Georgia, serif" font-size="150" font-weight="900" fill="#1a1a1a" text-anchor="middle" letter-spacing="-4">Daybook</text>
+    <text x="892" y="360" font-family="Georgia, serif" font-size="150" font-weight="900" fill="#b8893a" text-anchor="middle">.</text>
+    <rect x="360" y="440" width="480" height="6" fill="#1a1a1a"/>
+    <text x="600" y="520" font-family="Georgia, serif" font-style="italic" font-size="44" fill="#666" text-anchor="middle">money, one day at a time</text>
+  </svg>
+</template>
+<div id="root"></div>
+
+<script type="text/babel">
+/* ============================================================
+   Daybook — data model, compute engine, formatters
+   Exposed on window.DAYBOOK for the other babel scripts.
+   ============================================================ */
+
+let __uid = 100;
+function uid() { return 'id' + (++__uid) + '_' + Math.random().toString(36).slice(2, 6); }
+
+/* ---- money formatting ---- */
+function fmtMoney(n) {
+  const neg = n < -0.0049;
+  const v = Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return (neg ? '−$' : '$') + v;
+}
+function fmtSigned(n) {
+  const v = Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return (n < 0 ? '−$' : '+$') + v;
+}
+
+/* ---- line type metadata ---- */
+const TYPE_META = {
+  credit:   { label: '+ Deposit',         tagClass: 'dep',      sign: +1, amtClass: 'positive', acct: true,  group: 'in'  },
+  pending:  { label: '⏳ Pending',         tagClass: 'pending',  sign: +1, amtClass: 'pending',  acct: true,  group: 'in'  },
+  clear:    { label: '+ Funds available',  tagClass: 'funds',    sign: +1, amtClass: 'positive', acct: true,  group: 'in'  },
+  debit:    { label: 'Bill',               tagClass: 'biz',      sign: -1, amtClass: 'negative', acct: true,  group: 'out' },
+  savings:  { label: '💰 To savings',      tagClass: 'pending',  sign: -1, amtClass: 'pending',  acct: true,  group: 'move'},
+  transfer: { label: 'Transfer',           tagClass: '',         sign: -1, amtClass: 'negative', acct: false, group: 'move'},
+};
+
+const TYPE_OPTIONS = [
+  { value: 'credit',  text: 'Deposit' },
+  { value: 'pending', text: 'Pending' },
+  { value: 'clear',   text: 'Cleared' },
+  { value: 'debit',   text: 'Bill' },
+  { value: 'transfer',text: 'Transfer' },
+  { value: 'savings', text: 'To savings' },
+];
+
+/* resolve the displayed tag for a line */
+function lineTag(line) {
+  if (line.customTag) return { text: line.customTag, cls: line.customTagClass || 'biz' };
+  const m = TYPE_META[line.type];
+  if (line.type === 'debit') {
+    return { text: line.account === 'personal' ? 'Personal bill' : 'Business bill', cls: line.account === 'personal' ? 'personal' : 'biz' };
+  }
+  return { text: m.label, cls: m.tagClass };
+}
+
+/* ---- compute running balances across all days ---- */
+function isIRS(line) {
+  if (line.customTag && /irs/i.test(line.customTag)) return true;
+  return /\birs\b/i.test(line.desc || '');
+}
+
+/* Stripe processing fee: 2.9% + $0.30 per transaction */
+const STRIPE_RATE = 0.029;
+const STRIPE_FLAT = 0.30;
+function stripeFee(gross) {
+  const g = num(gross);
+  if (g <= 0) return 0;
+  return Math.round((g * STRIPE_RATE + STRIPE_FLAT) * 100) / 100;
+}
+function netAfterStripe(gross) {
+  return Math.round((num(gross) - stripeFee(gross)) * 100) / 100;
+}
+/* effective credited amount for a deposit-type line */
+function effAmount(line) {
+  const amt = num(line.amount);
+  return line.stripe ? netAfterStripe(amt) : amt;
+}
+
+function computeLedger(ledger) {
+  let biz = num(ledger.opening.biz);
+  let personal = num(ledger.opening.personal);
+  let savings = num(ledger.opening.savings);
+  let pending = num(ledger.opening.pending || 0);
+  let irs = num(ledger.opening.irs || 0);
+
+  let totalIn = 0, totalOut = 0;
+
+  function applyTo(acct, delta) { if (acct === 'personal') personal += delta; else biz += delta; }
+
+  const days = ledger.days.map(day => {
+    const sod = { biz, personal, savings, pending, irs };
+    const rows = day.lines.map(line => {
+      const amt = num(line.amount);
+      const net = (line.stripe && (line.type === 'credit' || line.type === 'clear' || line.type === 'pending'))
+        ? netAfterStripe(amt) : amt;
+      const acct = line.account || (line.type === 'savings' ? 'personal' : 'biz');
+      if (line.type === 'credit')        { applyTo(acct, +net); totalIn += net; }
+      else if (line.type === 'clear')    { pending -= amt; applyTo(acct, +net); totalIn += net; }
+      else if (line.type === 'pending')  { pending += net; }
+      else if (line.type === 'debit')    { applyTo(acct, -amt); totalOut += amt; if (isIRS(line)) irs += amt; }
+      else if (line.type === 'transfer') { biz -= amt; personal += amt; }
+      else if (line.type === 'savings')  { applyTo(acct, -amt); savings += amt; }
+      return { ...line, _bal: { biz, personal, pending, acct }, _fee: line.stripe ? stripeFee(amt) : 0, _net: net };
+    });
+    const eod = { biz, personal, savings, pending, irs };
+    return { ...day, _sod: sod, _eod: eod, _rows: rows };
+  });
+
+  return {
+    days,
+    summary: {
+      moneyIn: totalIn,
+      moneyOut: totalOut,
+      net: totalIn - totalOut,
+      endBiz: biz,
+      endPersonal: personal,
+      endSavings: savings,
+      endPending: pending,
+      irsPaid: irs,
+      cushion: biz + personal,
+    }
+  };
+}
+
+function num(v) { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+
+/* ---- seed ledger (faithful excerpt of the reference) ---- */
+const SEED = {
+  eyebrow: 'Suzanne · Elite Coastal Services',
+  title: 'Daily Money Ledger',
+  range: 'May 31 — June 30, 2026',
+  version: '$20 minimum balance always · Bills paid in full',
+  opening: { biz: 298.99, personal: 0.44, savings: 5.08, pending: 0, irs: 0 },
+  reference: {
+    business: [
+      { id: uid(), name: 'OnStar', due: '10th', cost: 23.99, auto: true, paused: false },
+      { id: uid(), name: 'Booking Koala', due: '17th', cost: 57, auto: true, paused: false },
+      { id: uid(), name: 'Claude AI', due: '17th', cost: 100, auto: true, paused: false },
+      { id: uid(), name: 'Angi', due: '19th', cost: 350, auto: true, paused: false },
+      { id: uid(), name: 'Bank fee — business', due: '30th', cost: 12.21, auto: true, paused: false },
+      { id: uid(), name: 'Supplies', due: '~monthly', cost: 60, auto: false, paused: false },
+      { id: uid(), name: 'IRS Direct Pay', due: 'every Mon', cost: 30, auto: false, paused: false },
+    ],
+    personal: [
+      { id: uid(), name: 'Car insurance', due: '10th (grace 20th)', cost: 122.83, auto: true, paused: false },
+      { id: uid(), name: 'NightCafe', due: '11th', cost: 12.49, auto: true, paused: false },
+      { id: uid(), name: 'Phone', due: '18th', cost: 45.98, auto: true, paused: false },
+      { id: uid(), name: 'Pest control', due: '12th', cost: 55, auto: true, paused: false },
+      { id: uid(), name: 'Synovus monthly fee ⚠', due: '1st', cost: 10, auto: false, paused: false },
+      { id: uid(), name: 'Rent', due: 'Mondays', cost: 70, auto: false, paused: false },
+      { id: uid(), name: 'Court fee', due: '30th', cost: 50, auto: false, paused: false },
+      { id: uid(), name: 'Ministry ad ★', due: '30th', cost: 60, auto: false, paused: false },
+      { id: uid(), name: 'Prime', due: '—', cost: 0, auto: false, paused: true },
+      { id: uid(), name: 'Food', due: 'weekly', cost: 50, auto: false, paused: false },
+      { id: uid(), name: 'Gas', due: 'weekly', cost: 90, auto: false, paused: false },
+      { id: uid(), name: 'Savings', due: 'weekly', cost: 60, auto: false, paused: false },
+    ],
+  },
+  maintenance: {
+    odometer: 158698,
+    asOf: 'May 29, 2026 · MPG 15.5',
+    items: [
+      { id: uid(), item: 'Tire rotation', due: 'next at 163,152', done: true },
+      { id: uid(), item: 'Oil change', due: 'next at 163,577', done: true },
+      { id: uid(), item: 'Annual inspection', due: 'July 2026', done: false },
+      { id: uid(), item: 'Windshield wipers', due: 'August 2026', done: false },
+      { id: uid(), item: 'Starter (preventive)', due: 'by 162,901', done: false },
+      { id: uid(), item: 'Alignment', due: 'by 163,000', done: false },
+      { id: uid(), item: 'Cabin air filter', due: 'by 163,000', done: false },
+      { id: uid(), item: 'Brake fluid flush', due: 'by 173,000', done: false },
+      { id: uid(), item: 'Front brakes', due: 'by 176,000', done: false },
+      { id: uid(), item: 'New tires', due: 'by 198,000', done: false },
+    ],
+  },
+  upcoming: [
+    { id: uid(), item: '🚦 Traffic ticket + court fee', cost: 310, due: 'June 12, 2026', done: false },
+    { id: uid(), item: '🚗 FL vehicle title transfer', cost: 450, due: 'July 31, 2026', done: false },
+    { id: uid(), item: '🎨 Tattoo deposit', cost: 200, due: 'July 31, 2026', done: false },
+    { id: uid(), item: '🎨 Tattoo completion', cost: 300, due: 'August 30, 2026', done: false },
+  ],
+  fuel: [
+    { id: uid(), date: 'May 29', odometer: 158698, gallons: 0 },
+  ],
+  days: [
+    { id: uid(), date: 'Sunday, May 31', star: false, note: 'Starting baseline.', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Joe', note: 'Payment pending', amount: 150, done: false },
+    ]},
+    { id: uid(), date: 'Monday, June 1', badge: '★ IRS Weekly Start', star: true, note: '★ New habit: $30 to IRS every Monday from now on. Set a reminder.', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Heather', note: 'Payment pending', amount: 80, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: '★ IRS Direct Pay (weekly habit starts)', note: 'IRS.gov/payments → Direct Pay → Estimated Tax → 2026', amount: 30, done: false, customTag: 'IRS Direct Pay', customTagClass: 'irs' },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Synovus monthly fee (June) ⚠', note: '⚡ AUTO. Try to waive — call Synovus', amount: 10, auto: true, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Traffic ticket — paid in full', note: 'Moved from Fri May 29.', amount: 260, done: false },
+    ]},
+    { id: uid(), date: 'Tuesday, June 2', star: false, note: '★ Friday transfer. Food + gas + buffer to cover next week.', lines: [] },
+    { id: uid(), date: 'Wednesday, June 3', star: false, note: '★ Big Monday. Cash deposited, Angi DONE, IRS week 2. Ministry given. Rent paid.', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Diane', note: 'Payment pending', amount: 170, done: false },
+    ]},
+    { id: uid(), date: 'Thursday, June 4', star: false, note: 'Car insurance + OnStar due today (both 10th).', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Chiara', note: 'Payment pending', amount: 174.25, done: false },
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Delano', note: 'Payment pending', amount: 309.34, done: false },
+    ]},
+    { id: uid(), date: 'Friday, June 5', star: false, note: "★ Deposit Marc's cash. ★ Friday transfer. Pest control + food + gas for next week.", lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Charles Tippy', note: 'Payment pending', amount: 169.78, done: false },
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Jeanette', note: 'Payment pending', amount: 100, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'Supplies', note: '', amount: 60, done: false },
+      { id: uid(), type: 'transfer', desc: 'Transfer Business → Personal', note: '', amount: 0, done: false },
+      { id: uid(), type: 'savings', account: 'personal', desc: 'Savings', note: '', amount: 60, done: false },
+    ]},
+    { id: uid(), date: 'Saturday, June 6', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Sunday, June 7', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Monday, June 8', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Heather', note: 'Payment pending', amount: 0, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'IRS Direct Pay', note: '', amount: 30, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Rent', note: '', amount: 70, done: false },
+    ]},
+    { id: uid(), date: 'Tuesday, June 9', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Marc', note: 'Payment pending', amount: 140, done: false },
+    ]},
+    { id: uid(), date: 'Wednesday, June 10', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Ken', note: 'Payment pending', amount: 150, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'Onstar', note: '', amount: 23.99, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Car Insurance', note: '', amount: 122.83, done: false },
+    ]},
+    { id: uid(), date: 'Thursday, June 11', star: false, note: '', lines: [
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Night Cafe', note: '', amount: 12.47, done: false },
+    ]},
+    { id: uid(), date: 'Friday, June 12', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Joe', note: '', amount: 115.17, done: false },
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Lucky', note: 'Payment pending', amount: 154.13, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Pest Control', note: '', amount: 55, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Food', note: '', amount: 50, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Gass', note: '', amount: 90, done: false },
+      { id: uid(), type: 'transfer', desc: 'Savings', note: '', amount: 60, done: false },
+    ]},
+    { id: uid(), date: 'Saturday, June 13', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Sunday, June 14', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Monday, June 15', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Heather', note: 'Payment pending', amount: 80, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'IRS Direct Pay', note: '', amount: 30, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Rent', note: '', amount: 70, done: false },
+    ]},
+    { id: uid(), date: 'Tuesday, June 16', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Wednesday, June 17', star: false, note: '', lines: [
+      { id: uid(), type: 'debit', account: 'biz', desc: 'Booking Koala', note: '', amount: 57, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'Claude Ai', note: '', amount: 100, done: false },
+    ]},
+    { id: uid(), date: 'Thursday, June 18', star: false, note: '', lines: [
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Phone', note: '', amount: 45.98, done: false },
+    ]},
+    { id: uid(), date: 'Friday, June 19', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Charles Tippy', note: 'Payment pending', amount: 169.78, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'Angi', note: '', amount: 350, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Food', note: '', amount: 50, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Gas', note: '', amount: 90, done: false },
+      { id: uid(), type: 'transfer', desc: 'Savings', note: '', amount: 60, done: false },
+    ]},
+    { id: uid(), date: 'Saturday, June 20', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Jeanette', note: 'Payment pending', amount: 100, done: false },
+    ]},
+    { id: uid(), date: 'Sunday, June 21', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Monday, June 22', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Heather', note: 'Payment pending', amount: 80, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'IRS Direct Pay', note: '', amount: 30, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Rent', note: '', amount: 70, done: false },
+    ]},
+    { id: uid(), date: 'Tuesday, June 23', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Marc', note: 'Payment pending', amount: 140, done: false },
+    ]},
+    { id: uid(), date: 'Wednesday, June 24', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Ken', note: 'Payment pending', amount: 150, done: false },
+    ]},
+    { id: uid(), date: 'Thursday, June 25', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Friday, June 26', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Joe', note: 'Payment pending', amount: 115.17, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Food', note: '', amount: 50, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Gas', note: '', amount: 90, done: false },
+      { id: uid(), type: 'transfer', desc: 'Savings', note: '', amount: 60, done: false },
+    ]},
+    { id: uid(), date: 'Saturday, June 27', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Sunday, June 28', star: false, note: '', lines: [] },
+    { id: uid(), date: 'Monday, June 29', star: false, note: '', lines: [
+      { id: uid(), type: 'pending', account: 'biz', desc: 'Heather', note: 'Payment pending', amount: 80, done: false },
+      { id: uid(), type: 'debit', account: 'biz', desc: 'IRS Direct Pay', note: '', amount: 0, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Rent', note: '', amount: 70, done: false },
+    ]},
+    { id: uid(), date: 'Tuesday, June 30', star: false, note: '', lines: [
+      { id: uid(), type: 'debit', account: 'biz', desc: 'Bank Fee', note: '', amount: 12.21, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Court Fee', note: '', amount: 50, done: false },
+      { id: uid(), type: 'debit', account: 'personal', desc: 'Ministry Ad', note: '', amount: 60, done: false },
+    ]},
+  ],
+};
+
+window.DAYBOOK = { uid, fmtMoney, fmtSigned, computeLedger, num, TYPE_META, TYPE_OPTIONS, lineTag, SEED, stripeFee, netAfterStripe };
+
+</script>
+<script type="text/babel">
+/* ============================================================
+   Daybook — editable atom components
+   ============================================================ */
+const { useState, useRef, useEffect, useCallback } = React;
+
+/* text that reads as text but edits in place */
+function InlineInput({ value, onChange, placeholder, className = '', style, onKeyDown }) {
+  return (
+    <input
+      className={'inline-input ' + className}
+      style={style}
+      value={value == null ? '' : value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      onKeyDown={onKeyDown}
+    />
+  );
+}
+
+/* a growing textarea for day notes */
+function AutoTextarea({ value, onChange, placeholder, className = '' }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+  }, [value]);
+  return (
+    <textarea
+      ref={ref}
+      rows={1}
+      className={'inline-input ' + className}
+      value={value == null ? '' : value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  );
+}
+
+/* editable money figure with a colored sign */
+function MoneyInput({ value, onChange, sign, amtClass }) {
+  return (
+    <span className={'money-cell ' + amtClass}>
+      <span className="money-sign">{sign > 0 ? '+' : '−'}$</span>
+      <input
+        className="money-input"
+        type="number"
+        step="0.01"
+        min="0"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={(e) => e.target.select()}
+      />
+    </span>
+  );
+}
+
+/* read-only computed running balance chip */
+function BalanceChip({ acct, value }) {
+  const { fmtMoney } = window.DAYBOOK;
+  const cls = acct === 'personal' ? 'personal' : 'biz';
+  const label = acct === 'personal' ? 'Pers' : 'Biz';
+  return <span className={'balance-after ' + cls}>{label}: {fmtMoney(value)}</span>;
+}
+
+/* small icon button */
+function IconBtn({ onClick, title, className = '', children }) {
+  return (
+    <button className={'icon-btn ' + className} title={title} onClick={onClick} type="button">
+      {children}
+    </button>
+  );
+}
+
+Object.assign(window, { InlineInput, AutoTextarea, MoneyInput, BalanceChip, IconBtn });
+
+</script>
+<script type="text/babel">
+/* ============================================================
+   Daybook — editable DayBlock + LineRow
+   Renders one computed day with full inline editing.
+   ============================================================ */
+
+const SECTION_LABEL = {
+  in:       { text: 'Deposits & Incoming', cls: 'deposits' },
+  biz:      { text: 'Business Account',    cls: 'biz' },
+  personal: { text: 'Personal Account',    cls: 'personal' },
+  move:     { text: 'Savings',             cls: 'deposits' },
+};
+
+function sectionOf(line) {
+  if (line.type === 'transfer') return 'transfer';
+  if (line.type === 'savings') return 'move';
+  if (line.type === 'debit') return line.account === 'personal' ? 'personal' : 'biz';
+  return 'in';
+}
+
+/* ---- one editable line ---- */
+function LineRow({ line, onPatch, onDelete }) {
+  const { TYPE_META, TYPE_OPTIONS, lineTag } = window.DAYBOOK;
+  const meta = TYPE_META[line.type] || TYPE_META.debit;
+  const tag = lineTag(line);
+
+  const typeSelect = (
+    <select className="type-select" value={line.type}
+      onChange={(e) => onPatch({ type: e.target.value, customTag: undefined, customTagClass: undefined })}>
+      {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.text}</option>)}
+    </select>
+  );
+
+  /* ---- transfer renders as a full-width dark bar ---- */
+  if (line.type === 'transfer') {
+    return (
+      <div className="transfer-row">
+        <span className="transfer-arrow">→</span>
+        <window.InlineInput value={line.desc} placeholder="Transfer…"
+          onChange={(v) => onPatch({ desc: v })} style={{ maxWidth: '320px' }} />
+        <window.MoneyInput value={line.amount} sign={-1} amtClass=""
+          onChange={(v) => onPatch({ amount: v })} />
+        <span className="transfer-pair">
+          <span className="biz">Biz {window.DAYBOOK.fmtMoney(line._bal.biz)}</span>
+          <span className="personal">Pers {window.DAYBOOK.fmtMoney(line._bal.personal)}</span>
+        </span>
+        <div className="row-actions">
+          {typeSelect}
+          <window.IconBtn title="Delete" onClick={onDelete}>×</window.IconBtn>
+        </div>
+      </div>
+    );
+  }
+
+  /* effective account (savings defaults to personal, others to business) */
+  const effAcct = line.account || (line.type === 'savings' ? 'personal' : 'biz');
+
+  /* ---- balance chip ---- */
+  let balance;
+  if (line.type === 'pending') {
+    balance = <span className="balance-after pending">Pending: {window.DAYBOOK.fmtMoney(line._bal.pending)}</span>;
+  } else {
+    balance = <window.BalanceChip acct={effAcct} value={line._bal[effAcct]} />;
+  }
+
+  const showAcct = meta.acct;
+
+  return (
+    <div className={'line-row edit' + (line.done ? ' done' : '')}>
+      <div className="check-box" onClick={() => onPatch({ done: !line.done })} title="Mark done">
+        {line.done ? '✓' : ''}
+      </div>
+      <div className="line-content">
+        <div className="line-controls" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+          {line.customTag
+            ? <span className={'line-tag ' + (line.customTagClass || 'biz')}>{line.customTag}</span>
+            : <span className={'line-tag ' + tag.cls} style={{ alignSelf: 'auto' }}>{tag.text}</span>}
+          {typeSelect}
+          {showAcct && (
+            <button className={'acct-toggle ' + effAcct}
+              onClick={() => onPatch({ account: effAcct === 'personal' ? 'biz' : 'personal' })} type="button">
+              {effAcct === 'personal' ? 'Personal' : 'Business'}
+            </button>
+          )}
+          {meta.group === 'in' && (
+            <button className={'stripe-toggle' + (line.stripe ? ' on' : '')}
+              title="Apply Stripe fee (2.9% + $0.30)"
+              onClick={() => onPatch({ stripe: !line.stripe })} type="button">
+              Stripe
+            </button>
+          )}
+          {line.auto && <span className="auto-tag">⚡ Auto</span>}
+        </div>
+        <window.InlineInput className="desc-input line-item" value={line.desc}
+          placeholder="Describe this line…" onChange={(v) => onPatch({ desc: v })} />
+        {line.stripe && meta.group === 'in' && (
+          <span className="stripe-hint">
+            Stripe fee −{window.DAYBOOK.fmtMoney(line._fee)} · nets {window.DAYBOOK.fmtMoney(line._net)}
+          </span>
+        )}
+        <window.InlineInput className="line-note" value={line.note}
+          placeholder="note (optional)" onChange={(v) => onPatch({ note: v })} />
+      </div>
+      <window.MoneyInput value={line.amount} sign={meta.sign} amtClass={meta.amtClass}
+        onChange={(v) => onPatch({ amount: v })} />
+      {balance}
+      <div className="row-actions">
+        <window.IconBtn title="Delete line" onClick={onDelete}>×</window.IconBtn>
+      </div>
+    </div>
+  );
+}
+
+/* ---- band of computed balances ---- */
+function Band({ kind, bal }) {
+  const { fmtMoney } = window.DAYBOOK;
+  return (
+    <div className={'band ' + kind}>
+      <span className="band-label">{kind === 'sod' ? 'Start of day:' : 'End of day:'}</span>
+      <span className="band-fig biz">Biz {fmtMoney(bal.biz)}</span>
+      <span className="band-div">·</span>
+      <span className="band-fig pending">Pending {fmtMoney(bal.pending)}</span>
+      <span className="band-div">·</span>
+      <span className="band-fig personal">Personal {fmtMoney(bal.personal)}</span>
+      <span className="band-div">·</span>
+      <span className="band-fig pot">💰 Savings {fmtMoney(bal.savings)}</span>
+      <span className="band-div">·</span>
+      <span className="band-fig irs">🏛 IRS paid {fmtMoney(bal.irs)}</span>
+    </div>
+  );
+}
+
+/* ---- the day block ---- */
+function DayBlock({ day, onPatchDay, onDeleteDay, onPatchLine, onDeleteLine, onAddLine }) {
+  // build render items, inserting section labels on bucket change
+  const items = [];
+  let prev = null;
+  day._rows.forEach((line) => {
+    const sec = sectionOf(line);
+    if (sec === 'transfer') {
+      prev = null;
+      items.push(<LineRow key={line.id} line={line}
+        onPatch={(p) => onPatchLine(day.id, line.id, p)} onDelete={() => onDeleteLine(day.id, line.id)} />);
+      return;
+    }
+    if (sec !== prev) {
+      const lbl = SECTION_LABEL[sec];
+      items.push(<div key={'lbl-' + line.id} className={'section-label ' + lbl.cls}>{lbl.text}</div>);
+      prev = sec;
+    }
+    items.push(<LineRow key={line.id} line={line}
+      onPatch={(p) => onPatchLine(day.id, line.id, p)} onDelete={() => onDeleteLine(day.id, line.id)} />);
+  });
+
+  return (
+    <div className={'day' + (day.star ? ' star' : '')} id={'day-' + day.id}>
+      <div className="day-header">
+        <button className={'star-toggle' + (day.star ? ' on' : '')} title="Mark important"
+          onClick={() => onPatchDay(day.id, { star: !day.star })} type="button">★</button>
+        <h2>
+          <window.InlineInput value={day.date} placeholder="Day…"
+            onChange={(v) => onPatchDay(day.id, { date: v })} />
+        </h2>
+        {day.badge && (
+          <span className="badge">
+            <window.InlineInput value={day.badge} onChange={(v) => onPatchDay(day.id, { badge: v })}
+              style={{ color: 'var(--gold)', width: '160px' }} />
+          </span>
+        )}
+        <window.IconBtn className="day-delete" title="Delete day" onClick={() => onDeleteDay(day.id)}>🗑</window.IconBtn>
+      </div>
+
+      <Band kind="sod" bal={day._sod} />
+
+      {items.length ? items : <div className="section-empty">No entries yet — add one below.</div>}
+
+      <div className="add-row">
+        <button className="add-line" onClick={() => onAddLine(day.id, 'debit')} type="button">
+          <span className="plus">+</span> Add bill payment
+        </button>
+        <button className="add-line" onClick={() => onAddLine(day.id, 'pending')} type="button">
+          <span className="plus">+</span> Add pending payment
+        </button>
+        <button className="add-line" onClick={() => onAddLine(day.id, 'credit')} type="button">
+          <span className="plus">+</span> Add deposit
+        </button>
+        <button className="add-line" onClick={() => onAddLine(day.id, 'transfer')} type="button">
+          <span className="plus">+</span> Add transfer
+        </button>
+      </div>
+
+      <Band kind="eod" bal={day._eod} />
+
+      <div className="day-note">
+        <window.AutoTextarea value={day.note} placeholder="A note for the day…"
+          className="day-note-edit" onChange={(v) => onPatchDay(day.id, { note: v })} />
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { DayBlock, LineRow });
+
+</script>
+<script type="text/babel">
+/* ============================================================
+   Daybook — Reference guide, Maintenance & Upcoming charts
+   All editable, built on the design-system tokens.
+   ============================================================ */
+
+/* ---- Payment Reference (business + personal bill tracker) ---- */
+function ReferenceCard({ reference, onPatchBill, onAddBill, onDeleteBill }) {
+  const { fmtMoney, num } = window.DAYBOOK;
+
+  const total = (list) => list.filter(b => !b.paused).reduce((s, b) => s + num(b.cost), 0);
+
+  const Column = ({ side, title, cls }) => {
+    const list = reference[side];
+    return (
+      <div className="card-col">
+        <div className={'card-header ' + cls}>{title} · {fmtMoney(total(list))}/cycle</div>
+        <ul className="bill-list">
+          {list.map(b => (
+            <li key={b.id} className={b.paused ? 'paused' : ''}>
+              <span className="bill-main">
+                <window.InlineInput className="bill-name-in" value={b.name} placeholder="Bill name…"
+                  onChange={(v) => onPatchBill(side, b.id, { name: v })} />
+                {b.auto && <span className="auto-tag">⚡ Auto</span>}
+              </span>
+              <span className="bill-controls">
+                <window.InlineInput className="bill-due-in" value={b.due} placeholder="due"
+                  onChange={(v) => onPatchBill(side, b.id, { due: v })} />
+                <span className="bill-amt">$<input type="number" step="0.01" className="bill-cost-in"
+                  value={b.cost} onChange={(e) => onPatchBill(side, b.id, { cost: e.target.value })} /></span>
+                <button className={'mini-toggle' + (b.auto ? ' on' : '')} title="Auto-pay"
+                  onClick={() => onPatchBill(side, b.id, { auto: !b.auto })} type="button">⚡</button>
+                <button className={'mini-toggle' + (b.paused ? ' on' : '')} title="Pause"
+                  onClick={() => onPatchBill(side, b.id, { paused: !b.paused })} type="button">⏸</button>
+                <window.IconBtn title="Delete bill" onClick={() => onDeleteBill(side, b.id)}>×</window.IconBtn>
+              </span>
+            </li>
+          ))}
+        </ul>
+        <button className="add-line" onClick={() => onAddBill(side)} type="button">
+          <span className="plus">+</span> Add bill
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="payment-card">
+      <h3>Payment Reference — Which Account · When Due</h3>
+      <div className="card-grid">
+        <Column side="business" title="BUSINESS PAYS" cls="biz" />
+        <Column side="personal" title="PERSONAL PAYS" cls="personal" />
+      </div>
+    </div>
+  );
+}
+
+/* ---- Truck Maintenance chart ---- */
+function MaintenanceCard({ maintenance, onPatchMeta, onPatchItem, onAddItem, onDeleteItem }) {
+  return (
+    <div className="chart-card">
+      <div className="chart-header maint">🔧 Upcoming Truck Maintenance</div>
+      <div className="chart-body">
+        <ul className="chart-list">
+          {maintenance.items.map(m => (
+            <li key={m.id} className={m.done ? 'done' : ''}>
+              <span className="chk" onClick={() => onPatchItem(m.id, { done: !m.done })}
+                title="Mark done">{m.done ? '✓' : ''}</span>
+              <window.InlineInput className="chart-item-in" value={m.item} placeholder="Maintenance item…"
+                onChange={(v) => onPatchItem(m.id, { item: v })} />
+              <window.InlineInput className="chart-due-in" value={m.due} placeholder="due / odometer"
+                onChange={(v) => onPatchItem(m.id, { due: v })} />
+              <window.IconBtn title="Delete" onClick={() => onDeleteItem(m.id)}>×</window.IconBtn>
+            </li>
+          ))}
+        </ul>
+        <button className="add-line" onClick={onAddItem} type="button">
+          <span className="plus">+</span> Add maintenance item
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ---- Upcoming One-Time Expenses chart ---- */
+function UpcomingCard({ upcoming, onPatchItem, onAddItem, onDeleteItem }) {
+  const { fmtMoney, num } = window.DAYBOOK;
+  const total = upcoming.filter(u => !u.done).reduce((s, u) => s + num(u.cost), 0);
+  return (
+    <div className="chart-card">
+      <div className="chart-header upcoming">📋 Upcoming One-Time Expenses · {fmtMoney(total)} remaining</div>
+      <div className="chart-body">
+        <ul className="chart-list">
+          {upcoming.map(u => (
+            <li key={u.id} className={u.done ? 'done' : ''}>
+              <span className="chk" onClick={() => onPatchItem(u.id, { done: !u.done })}
+                title="Mark paid">{u.done ? '✓' : ''}</span>
+              <window.InlineInput className="chart-item-in" value={u.item} placeholder="Expense…"
+                onChange={(v) => onPatchItem(u.id, { item: v })} />
+              <span className="upcoming-cost">$<input type="number" step="0.01" className="chart-cost-in"
+                value={u.cost} onChange={(e) => onPatchItem(u.id, { cost: e.target.value })} /></span>
+              <window.InlineInput className="chart-due-in" value={u.due} placeholder="due"
+                onChange={(v) => onPatchItem(u.id, { due: v })} />
+              <window.IconBtn title="Delete" onClick={() => onDeleteItem(u.id)}>×</window.IconBtn>
+            </li>
+          ))}
+        </ul>
+        <button className="add-line" onClick={onAddItem} type="button">
+          <span className="plus">+</span> Add upcoming expense
+        </button>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { ReferenceCard, MaintenanceCard, UpcomingCard });
+
+</script>
+<script type="text/babel">
+/* ============================================================
+   Daybook — Fuel Log
+   Records each fill-up (date, odometer, gallons) and AUTO-computes
+   miles driven + MPG. No math for the user.
+
+   MPG for a fill-up = (this odometer − previous odometer) ÷ gallons
+   Rolling average = total miles ÷ total gallons (across logged fills)
+   ============================================================ */
+
+function FuelLog({ fuel, onPatch, onAdd, onDelete }) {
+  const { num } = window.DAYBOOK;
+
+  // compute miles + mpg per row (relative to the row above it)
+  const rows = fuel.map((f, i) => {
+    const odo = num(f.odometer);
+    const gal = num(f.gallons);
+    let miles = null, mpg = null;
+    if (i > 0) {
+      const prevOdo = num(fuel[i - 1].odometer);
+      miles = odo - prevOdo;
+      if (gal > 0 && miles >= 0) mpg = miles / gal;
+    }
+    return { ...f, _miles: miles, _mpg: mpg };
+  });
+
+  // current odometer = the highest/last logged reading
+  const current = fuel.length ? num(fuel[fuel.length - 1].odometer) : 0;
+
+  // rolling average over rows that have a valid mpg
+  let totMiles = 0, totGal = 0;
+  rows.forEach(r => { if (r._mpg != null) { totMiles += r._miles; totGal += num(r.gallons); } });
+  const avgMpg = totGal > 0 ? (totMiles / totGal) : null;
+
+  // simple trend flag: is the most recent mpg notably below the average?
+  const lastMpg = [...rows].reverse().find(r => r._mpg != null);
+  const lowFlag = (avgMpg != null && lastMpg && lastMpg._mpg < avgMpg * 0.88);
+
+  const fmtMpg = (v) => v == null ? '—' : v.toFixed(1);
+  const fmtOdo = (v) => num(v).toLocaleString('en-US');
+
+  return (
+    <div className="chart-card">
+      <div className="chart-header fuel">⛽ Fuel Log — MPG calculated for you</div>
+      <div className="chart-body">
+        <div className="odo-display">
+          <span className="odo-label">Current odometer</span>
+          <span className="odo-value">{fmtOdo(current)} mi</span>
+          <span className="odo-label" style={{ marginLeft: 'auto' }}>Avg MPG</span>
+          <span className={'mpg-badge' + (lowFlag ? ' low' : '')}>{fmtMpg(avgMpg)}</span>
+        </div>
+
+        {lowFlag && (
+          <div className="fuel-warn">
+            ⚠ Last tank ({fmtMpg(lastMpg._mpg)} MPG) is below your average ({fmtMpg(avgMpg)}). Worth a check — tire pressure, air filter, or brakes.
+          </div>
+        )}
+
+        <div className="fuel-row fuel-head">
+          <span>Date</span>
+          <span>Odometer</span>
+          <span>Gallons</span>
+          <span>Miles</span>
+          <span>MPG</span>
+          <span></span>
+        </div>
+
+        {rows.map((r, i) => (
+          <div className="fuel-row" key={r.id}>
+            <window.InlineInput className="fuel-date" value={r.date} placeholder="date"
+              onChange={(v) => onPatch(r.id, { date: v })} />
+            <span className="fuel-num"><input type="number" className="fuel-input" value={r.odometer}
+              onChange={(e) => onPatch(r.id, { odometer: e.target.value })} /></span>
+            <span className="fuel-num"><input type="number" step="0.01" className="fuel-input" value={r.gallons}
+              onChange={(e) => onPatch(r.id, { gallons: e.target.value })} /></span>
+            <span className="fuel-calc">{r._miles == null ? '—' : fmtOdo(r._miles)}</span>
+            <span className={'fuel-mpg' + (r._mpg != null && avgMpg != null && r._mpg < avgMpg * 0.88 ? ' low' : '')}>
+              {fmtMpg(r._mpg)}
+            </span>
+            <window.IconBtn title="Delete fill-up" onClick={() => onDelete(r.id)}>×</window.IconBtn>
+          </div>
+        ))}
+
+        <button className="add-line" onClick={onAdd} type="button">
+          <span className="plus">+</span> Add fill-up
+        </button>
+
+        <div className="fuel-note">
+          Enter the <strong>odometer</strong> and <strong>gallons</strong> at each fill-up — MPG and miles driven are calculated automatically from the previous reading. The first row is just your starting odometer (no MPG yet).
+        </div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { FuelLog });
+
+</script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+const { computeLedger, fmtMoney, uid, SEED } = window.DAYBOOK;
+const STORAGE_KEY = 'daybook_ledger_v6';
+
+// probe whether localStorage actually persists in this context
+function storageWorks() {
+  try {
+    const k = '__db_probe__';
+    localStorage.setItem(k, '1');
+    const ok = localStorage.getItem(k) === '1';
+    localStorage.removeItem(k);
+    return ok;
+  } catch (e) { return false; }
+}
+const STORAGE_OK = storageWorks();
+
+function loadLedger() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // backfill new sections if loading an older save
+      const seed = JSON.parse(JSON.stringify(SEED));
+      if (!parsed.reference) parsed.reference = seed.reference;
+      if (!parsed.maintenance) parsed.maintenance = seed.maintenance;
+      if (!parsed.upcoming) parsed.upcoming = seed.upcoming;
+      if (!parsed.fuel) parsed.fuel = seed.fuel;
+      if (parsed.opening && parsed.opening.irs == null) parsed.opening.irs = 0;
+      return parsed;
+    }
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(SEED));
+}
+
+function pillLabel(date) {
+  const parts = (date || '').split(', ');
+  if (parts.length === 2) return parts[0].slice(0, 3) + ' · ' + parts[1];
+  return (date || 'Day').slice(0, 12);
+}
+
+function App() {
+  const [ledger, setLedger] = useState(loadLedger);
+  const [toast, setToast] = useState('');
+  const [saved, setSaved] = useState(true);
+  const toastTimer = useRef(null);
+  const firstRun = useRef(true);
+
+  // autosave
+  useEffect(() => {
+    if (firstRun.current) { firstRun.current = false; return; }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ledger));
+      setSaved(true);
+    } catch (e) { setSaved(false); }
+  }, [ledger]);
+
+  const flash = (msg) => {
+    setToast(msg);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(''), 1600);
+  };
+
+  const importJSON = () => {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'application/json,.json';
+    inp.onchange = () => {
+      const file = inp.files && inp.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (!data.days || !data.opening) throw new Error('not a Daybook file');
+          const seed = JSON.parse(JSON.stringify(SEED));
+          if (!data.reference) data.reference = seed.reference;
+          if (!data.maintenance) data.maintenance = seed.maintenance;
+          if (!data.upcoming) data.upcoming = seed.upcoming;
+          setLedger(data);
+          flash('Imported ✓');
+        } catch (err) { flash('Could not read that file'); }
+      };
+      reader.readAsText(file);
+    };
+    inp.click();
+  };
+
+  const computed = computeLedger(ledger);
+
+  // ---- mutators ----
+  const patchMeta = (patch) => setLedger(l => ({ ...l, ...patch }));
+  const patchOpening = (patch) => setLedger(l => ({ ...l, opening: { ...l.opening, ...patch } }));
+
+  const patchDay = (dayId, patch) => setLedger(l => ({
+    ...l, days: l.days.map(d => d.id === dayId ? { ...d, ...patch } : d)
+  }));
+  const deleteDay = (dayId) => {
+    if (!window.confirm('Delete this whole day?')) return;
+    setLedger(l => ({ ...l, days: l.days.filter(d => d.id !== dayId) }));
+    flash('Day deleted');
+  };
+  const patchLine = (dayId, lineId, patch) => setLedger(l => ({
+    ...l, days: l.days.map(d => d.id !== dayId ? d : {
+      ...d, lines: d.lines.map(ln => ln.id === lineId ? { ...ln, ...patch } : ln)
+    })
+  }));
+  const deleteLine = (dayId, lineId) => setLedger(l => ({
+    ...l, days: l.days.map(d => d.id !== dayId ? d : { ...d, lines: d.lines.filter(ln => ln.id !== lineId) })
+  }));
+  const DEFAULT_LINE = {
+    debit:    { type: 'debit', account: 'biz', desc: '', note: '', amount: 0, done: false },
+    pending:  { type: 'pending', account: 'biz', desc: '', note: 'Payment pending', amount: 0, done: false },
+    credit:   { type: 'credit', account: 'biz', desc: '', note: '', amount: 0, done: false },
+    transfer: { type: 'transfer', desc: 'Transfer Business → Personal', note: '', amount: 0, done: false },
+  };
+  const addLine = (dayId, kind = 'debit') => setLedger(l => ({
+    ...l, days: l.days.map(d => d.id !== dayId ? d : {
+      ...d, lines: [...d.lines, { ...(DEFAULT_LINE[kind] || DEFAULT_LINE.debit), id: uid() }]
+    })
+  }));
+
+  // ---- reference / maintenance / upcoming mutators ----
+  const patchBill = (side, billId, patch) => setLedger(l => ({
+    ...l, reference: { ...l.reference, [side]: l.reference[side].map(b => b.id === billId ? { ...b, ...patch } : b) }
+  }));
+  const addBill = (side) => setLedger(l => ({
+    ...l, reference: { ...l.reference, [side]: [...l.reference[side], { id: uid(), name: '', due: '', cost: 0, auto: false, paused: false }] }
+  }));
+  const deleteBill = (side, billId) => setLedger(l => ({
+    ...l, reference: { ...l.reference, [side]: l.reference[side].filter(b => b.id !== billId) }
+  }));
+
+  const patchMaint = (patch) => setLedger(l => ({ ...l, maintenance: { ...l.maintenance, ...patch } }));
+  const patchMaintItem = (itemId, patch) => setLedger(l => ({
+    ...l, maintenance: { ...l.maintenance, items: l.maintenance.items.map(m => m.id === itemId ? { ...m, ...patch } : m) }
+  }));
+  const addMaintItem = () => setLedger(l => ({
+    ...l, maintenance: { ...l.maintenance, items: [...l.maintenance.items, { id: uid(), item: '', due: '', done: false }] }
+  }));
+  const deleteMaintItem = (itemId) => setLedger(l => ({
+    ...l, maintenance: { ...l.maintenance, items: l.maintenance.items.filter(m => m.id !== itemId) }
+  }));
+
+  const patchUpcoming = (itemId, patch) => setLedger(l => ({
+    ...l, upcoming: l.upcoming.map(u => u.id === itemId ? { ...u, ...patch } : u)
+  }));
+  const addUpcoming = () => setLedger(l => ({ ...l, upcoming: [...l.upcoming, { id: uid(), item: '', cost: 0, due: '', done: false }] }));
+  const deleteUpcoming = (itemId) => setLedger(l => ({ ...l, upcoming: l.upcoming.filter(u => u.id !== itemId) }));
+
+  // ---- fuel log mutators ----
+  const patchFuel = (fid, patch) => setLedger(l => ({
+    ...l, fuel: (l.fuel || []).map(f => f.id === fid ? { ...f, ...patch } : f)
+  }));
+  const addFuel = () => setLedger(l => {
+    const list = l.fuel || [];
+    const lastOdo = list.length ? list[list.length - 1].odometer : 0;
+    return { ...l, fuel: [...list, { id: uid(), date: '', odometer: lastOdo || 0, gallons: 0 }] };
+  });
+  const deleteFuel = (fid) => setLedger(l => ({ ...l, fuel: (l.fuel || []).filter(f => f.id !== fid) }));
+  const addDay = () => {
+    const id = uid();
+    setLedger(l => ({ ...l, days: [...l.days, { id, date: 'New day', star: false, note: '', lines: [] }] }));
+    flash('Day added');
+    setTimeout(() => scrollToDay(id), 60);
+  };
+
+  const resetAll = () => {
+    if (!window.confirm('Reset everything back to the sample ledger? Your edits will be lost.')) return;
+    setLedger(JSON.parse(JSON.stringify(SEED)));
+    flash('Reset to sample');
+  };
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(ledger, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'daybook-ledger.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    flash('Exported JSON');
+  };
+
+  const scrollToDay = (id) => {
+    const el = document.getElementById('day-' + id);
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 112, behavior: 'smooth' });
+  };
+
+  const ctr = { textAlign: 'center' };
+
+  return (
+    <React.Fragment>
+      <div className="app-bar">
+        <span className="app-mark">Daybook<span className="dot">.</span></span>
+        <span className="app-range">{ledger.range}</span>
+        <span className={'save-dot' + (saved ? ' ok' : '')} title={saved ? 'Saved in this browser' : 'Not saved — use Export'}>
+          {STORAGE_OK ? (saved ? '● Saved' : '○ Saving…') : '○ Not saved'}
+        </span>
+        <span className="app-spacer"></span>
+        <button className="app-btn" onClick={importJSON}>Import</button>
+        <button className="app-btn" onClick={exportJSON}>Export</button>
+        <button className="app-btn" onClick={resetAll}>Reset</button>
+        <button className="app-btn primary" onClick={addDay}>+ Add day</button>
+      </div>
+
+      {!STORAGE_OK && (
+        <div className="storage-warn">
+          ⚠ This browser isn't letting Daybook save automatically (common when opening a file directly, especially in Safari). Your edits stay while this tab is open — use <strong>Export</strong> to save a copy to your computer, and <strong>Import</strong> to load it back later.
+        </div>
+      )}
+
+      <div className="day-nav">
+        {computed.days.map(d => (
+          <button key={d.id} className={'day-pill' + (d.star ? ' star' : '')} onClick={() => scrollToDay(d.id)}>
+            {pillLabel(d.date)}
+          </button>
+        ))}
+      </div>
+
+      <div className="page">
+        {/* masthead */}
+        <div className="masthead">
+          <div className="eyebrow">
+            <window.InlineInput value={ledger.eyebrow} style={ctr} onChange={v => patchMeta({ eyebrow: v })} />
+          </div>
+          <h1><window.InlineInput value={ledger.title} style={ctr} onChange={v => patchMeta({ title: v })} /></h1>
+          <div className="sub"><window.InlineInput value={ledger.range} style={ctr} onChange={v => patchMeta({ range: v })} /></div>
+          <div className="version"><window.InlineInput value={ledger.version} style={ctr} onChange={v => patchMeta({ version: v })} /></div>
+        </div>
+
+        {/* computed summary */}
+        <div className="summary">
+          <div className="summary-cell"><div className="summary-label">Money in</div><div className="summary-value">{fmtMoney(computed.summary.moneyIn)}</div></div>
+          <div className="summary-cell"><div className="summary-label">Money out</div><div className="summary-value">{fmtMoney(computed.summary.moneyOut)}</div></div>
+          <div className="summary-cell"><div className="summary-label">Net change</div><div className="summary-value">{fmtMoney(computed.summary.net)}</div></div>
+          <div className="summary-cell"><div className="summary-label">End cushion</div><div className="summary-value gold">{fmtMoney(computed.summary.cushion)}</div></div>
+        </div>
+
+        {/* opening balances */}
+        <div className="setup-card">
+          <span className="setup-label">Opening position</span>
+          <div className="setup-field"><label>Business</label><span className="setup-money biz">$<input type="number" step="0.01" value={ledger.opening.biz} onChange={e => patchOpening({ biz: e.target.value })} /></span></div>
+          <div className="setup-field"><label>Personal</label><span className="setup-money personal">$<input type="number" step="0.01" value={ledger.opening.personal} onChange={e => patchOpening({ personal: e.target.value })} /></span></div>
+          <div className="setup-field"><label>Pending</label><span className="setup-money pending">$<input type="number" step="0.01" value={ledger.opening.pending || 0} onChange={e => patchOpening({ pending: e.target.value })} /></span></div>
+          <div className="setup-field"><label>Savings</label><span className="setup-money pot">$<input type="number" step="0.01" value={ledger.opening.savings} onChange={e => patchOpening({ savings: e.target.value })} /></span></div>
+          <div className="setup-field"><label>IRS paid so far</label><span className="setup-money irs">$<input type="number" step="0.01" value={ledger.opening.irs || 0} onChange={e => patchOpening({ irs: e.target.value })} /></span></div>
+        </div>
+
+        {/* the system callout */}
+        <div className="tip-callout">
+          💡 <strong>How it works:</strong> Every line affects a running balance. <strong>Deposit</strong>/<strong>Cleared</strong> add money, <strong>Bill</strong> subtracts, <strong>Pending</strong> waits in its own pool, <strong>Transfer</strong> moves Business → Personal, <strong>To&nbsp;savings</strong> sets money aside. Edit any field — balances and the summary recompute instantly, and everything saves in your browser.
+        </div>
+
+        {/* reference guide */}
+        <window.ReferenceCard reference={ledger.reference}
+          onPatchBill={patchBill} onAddBill={addBill} onDeleteBill={deleteBill} />
+
+        {/* fuel log */}
+        <window.FuelLog fuel={ledger.fuel || []}
+          onPatch={patchFuel} onAdd={addFuel} onDelete={deleteFuel} />
+
+        {/* truck maintenance */}
+        <window.MaintenanceCard maintenance={ledger.maintenance}
+          onPatchMeta={patchMaint} onPatchItem={patchMaintItem}
+          onAddItem={addMaintItem} onDeleteItem={deleteMaintItem} />
+
+        {/* upcoming one-time expenses */}
+        <window.UpcomingCard upcoming={ledger.upcoming}
+          onPatchItem={patchUpcoming} onAddItem={addUpcoming} onDeleteItem={deleteUpcoming} />
+
+        {/* days */}
+        {computed.days.map(d => (
+          <window.DayBlock key={d.id} day={d}
+            onPatchDay={patchDay} onDeleteDay={deleteDay}
+            onPatchLine={patchLine} onDeleteLine={deleteLine} onAddLine={addLine} />
+        ))}
+
+        <button className="add-day" onClick={addDay} type="button">+ Add a day</button>
+
+        {/* end position */}
+        <div className="totals">
+          <h3>Current Position</h3>
+          <div className="totals-grid">
+            <div className="totals-row"><span>Business checking</span><strong>{fmtMoney(computed.summary.endBiz)}</strong></div>
+            <div className="totals-row"><span>Personal checking</span><strong>{fmtMoney(computed.summary.endPersonal)}</strong></div>
+            <div className="totals-row"><span>Pending (not yet usable)</span><strong>{fmtMoney(computed.summary.endPending)}</strong></div>
+            <div className="totals-row"><span>Savings pot</span><strong>{fmtMoney(computed.summary.endSavings)}</strong></div>
+            <div className="totals-row"><span>IRS paid to date</span><strong>{fmtMoney(computed.summary.irsPaid)}</strong></div>
+            <div className="totals-row grand"><span><strong>Total cushion (Business + Personal)</strong></span><strong>{fmtMoney(computed.summary.cushion)}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div className={'toast' + (toast ? ' show' : '')}>{toast}</div>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<script>
+/* register service worker for offline / installable-app support (no-op when opened from file://) */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
